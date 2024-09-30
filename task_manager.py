@@ -1,6 +1,7 @@
 from datetime import datetime
 import csv
 import os
+import argparse
 
 class Task:
     """A model to store task details"""
@@ -61,3 +62,26 @@ def mark_tasks_complete(task_index):
             print(f'Task {task_index + 1} marked as complete')
         else:
             print('Invalid task number')
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="A CLI Task Manager")
+
+    parser.add_argument(
+        '--add', nargs=3, metavar=('description', 'due_date', 'priority'),
+        help='Add a new task(due data format: YYYY-MM-DD)')
+    parser.add_argument('--view', action='store_true', help='Displays all tasks')
+    parser.add_argument('--complete', type=int, help="Mark completed tasks as complete")
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    args = parse_arguments()
+
+    if args.add:
+        description, due_date, priority = args.add
+        add_task(description, due_date, priority)
+    elif args.view:
+        view_tasks()
+    elif args.complete is not None:
+        mark_tasks_complete(args.complete - 1)
