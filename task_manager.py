@@ -21,8 +21,9 @@ def add_task(description, due_date, priority):
     task = Task(description, due_date, priority)
     with open('tasks.csv', 'a', newline='') as f:
         writer = csv.writer(f)
-        writer.writerows([description, due_date, priority, task.completed])
-    print(f'Task {description} added successfully')
+        writer.writerow([description, due_date, priority, task.completed])
+    print(task)
+    print(f'Task: {description} added successfully')
 
 
 def view_tasks():
@@ -30,14 +31,13 @@ def view_tasks():
     tasks = []
 
     if os.path.exists('tasks.csv'):
-        with open ('tasks.csv', 'a', newline='') as f:
+        with open ('tasks.csv', 'r') as f:
             reader = csv.reader(f)
 
             for row in reader:
                 description, due_date, priority, completed = row
-                task = Task(description, due_date, priority, completed == "True")
+                task = Task(description, due_date, priority, completed)
                 tasks.append(task)
-            print(tasks)
     # sort by due date
     tasks.sort(key=lambda t: t.due_date)
 
@@ -53,15 +53,15 @@ def mark_tasks_complete(task_index):
         reader = csv.reader(f)
         tasks = list(reader)
 
-        if 0 <= task_index < len(tasks):
-            tasks[task_index][3] == "True"
+    if 0 <= task_index < len(tasks):
+        tasks[task_index][3] = "True"
 
-            with open('tasks.csv', 'w', newline=''):
-                writer = csv.writer(f)
-                writer.writerows(tasks)
-            print(f'Task {task_index + 1} marked as complete')
-        else:
-            print('Invalid task number')
+        with open('tasks.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(tasks)
+        print(f'Task {task_index + 1} marked as complete')
+    else:
+        print('Invalid task number')
 
 
 def parse_arguments():
