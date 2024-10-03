@@ -7,7 +7,10 @@ class Task:
     """A model to store task details"""
     def __init__(self, description, due_date, priority, completed=False):
         self.description = description
-        self.due_date = datetime.strptime(due_date, '%Y-%m-%d')
+        try:
+            self.due_date = datetime.strptime(due_date, '%Y-%m-%d')
+        except ValueError:
+            raise ValueError(f'Incorrect data format {due_date}. It should be YYYY-MM-DD')
         self.priority = priority
         self.completed = completed
 
@@ -18,7 +21,12 @@ class Task:
     
 def add_task(description, due_date, priority):
     """A function to add tasks to a csv file"""
-    task = Task(description, due_date, priority)
+    try:
+        task = Task(description, due_date, priority)
+    except ValueError as e:
+        print(e)
+        return
+    
     with open('tasks.csv', 'a', newline='') as f:
         writer = csv.writer(f)
         writer.writerow([description, due_date, priority, task.completed])
@@ -30,14 +38,27 @@ def view_tasks():
     """This functions reads tasks from csv and displays them"""
     tasks = []
 
-    if os.path.exists('tasks.csv'):
-        with open ('tasks.csv', 'r') as f:
-            reader = csv.reader(f)
+    if not os.path.exists('tasks.csv'):
+        print('No tasks found. Please add a task first')
+        return
 
-            for row in reader:
+
+    with open ('tasks.csv', 'r') as f:
+        reader = csv.reader(f)
+
+        for row in reader:
+            try:
                 description, due_date, priority, completed = row
-                task = Task(description, due_date, priority, completed)
-                tasks.append(task)
+            except ValueError:
+                print('No task added yet')
+                return
+            task = Task(description, due_date, priority, completed == 'True')
+            tasks.append(task)
+    
+    if not tasks:
+        print("No tasks available")
+        return
+    
     # sort by due date
     tasks.sort(key=lambda t: t.due_date)
 
@@ -48,6 +69,10 @@ def view_tasks():
 def mark_tasks_complete(task_index):
     """Marks tasks as complete"""
     tasks = []
+
+    if not os.path.exists('tasks.csv'):
+        print('No tasks available. Add a task first')
+        return
 
     with open('tasks.csv', 'r', newline='') as f:
         reader = csv.reader(f)
@@ -61,7 +86,7 @@ def mark_tasks_complete(task_index):
             writer.writerows(tasks)
         print(f'Task {task_index + 1} marked as complete')
     else:
-        print('Invalid task number')
+        print('No such task. View tasks available by number')
 
 
 def parse_arguments():
