@@ -31,7 +31,7 @@ def add_task(description, due_date, priority):
         writer = csv.writer(f)
         writer.writerow([description, due_date, priority, task.completed])
     print(task)
-    print(f'Task: {description} added successfully')
+    print(f"Task: {description} added successfully")
 
 
 def view_tasks():
@@ -50,7 +50,7 @@ def view_tasks():
             try:
                 description, due_date, priority, completed = row
             except ValueError:
-                print('No task added yet')
+                print('No tasks added yet')
                 return
             task = Task(description, due_date, priority, completed == 'True')
             tasks.append(task)
@@ -89,6 +89,30 @@ def mark_tasks_complete(task_index):
         print('No such task. View tasks available by number')
 
 
+def delete_task(task_index):
+    """Deletes a task by index"""
+    if not os.path.exists('tasks.csv'):
+        print("Tasks not found")
+        return
+    
+    tasks = []
+    
+    with open('tasks.csv', mode='r', newline='') as f:
+        reader = csv.reader(f)
+        tasks = list(reader)
+
+    if 0 <= task_index < len(tasks):
+        deleted_task = tasks.pop(task_index)
+
+        with open('tasks.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(tasks)
+        print(f'Deleted {deleted_task[0]}')
+    else:
+        print(f"Invalid task number. Please select a task number between 1 and {len(tasks)}")
+
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description="A CLI Task Manager")
 
@@ -97,6 +121,7 @@ def parse_arguments():
         help='Add a new task(due data format: YYYY-MM-DD)')
     parser.add_argument('--view', action='store_true', help='Displays all tasks')
     parser.add_argument('--complete', type=int, help="Mark completed tasks as complete")
+    parser.add_argument('--delete', type=int, help="Delete a task by number")
 
     return parser.parse_args()
 
@@ -110,3 +135,5 @@ if __name__ == "__main__":
         view_tasks()
     elif args.complete is not None:
         mark_tasks_complete(args.complete - 1)
+    elif args.delete is not None:
+        delete_task(args.delete - 1)
