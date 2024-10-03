@@ -5,21 +5,22 @@ import argparse
 
 class Task:
     """A model to store task details"""
-    def __init__(self, description, due_date, priority, completed=False):
+    def __init__(self, description, due_date, priority, tags="", completed=False):
         self.description = description
         try:
             self.due_date = datetime.strptime(due_date, '%Y-%m-%d')
         except ValueError:
             raise ValueError(f'Incorrect data format {due_date}. It should be YYYY-MM-DD')
         self.priority = priority
+        self.tags = tags
         self.completed = completed
 
 
     def __str__(self):
         status = "Done" if self.completed else "Pending"
-        return f'{self.description} | Due: {self.due_date.date()} | Priority: {self.priority} | Status: {status}'
+        return f'{self.description} | Due: {self.due_date.date()} | Priority: {self.priority} | Tags: {self.tags} | Status: {status}'
     
-def add_task(description, due_date, priority):
+def add_task(description, due_date, priority, tags=""):
     """A function to add tasks to a csv file"""
     try:
         task = Task(description, due_date, priority)
@@ -29,9 +30,8 @@ def add_task(description, due_date, priority):
     
     with open('tasks.csv', 'a', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow([description, due_date, priority, task.completed])
-    print(task)
-    print(f"Task: {description} added successfully")
+        writer.writerow([description, due_date, priority, tags, task.completed])
+    print(f"Task: {description} added successfully under {tags}")
 
 
 def view_tasks():
@@ -48,11 +48,11 @@ def view_tasks():
 
         for row in reader:
             try:
-                description, due_date, priority, completed = row
+                description, due_date, priority, tags, completed = row
             except ValueError:
                 print('No tasks added yet')
                 return
-            task = Task(description, due_date, priority, completed == 'True')
+            task = Task(description, due_date, priority, tags, completed == 'True')
             tasks.append(task)
     
     if not tasks:
@@ -117,23 +117,32 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="A CLI Task Manager")
 
     parser.add_argument(
-        '--add', nargs=3, metavar=('description', 'due_date', 'priority'),
-        help='Add a new task(due data format: YYYY-MM-DD)')
+        '--add', nargs='+', help='Add a new task(due data format: YYYY-MM-DD), optional tags')
     parser.add_argument('--view', action='store_true', help='Displays all tasks')
     parser.add_argument('--complete', type=int, help="Mark completed tasks as complete")
     parser.add_argument('--delete', type=int, help="Delete a task by number")
 
     return parser.parse_args()
 
-if __name__ == "__main__":
+def main():
     args = parse_arguments()
 
     if args.add:
-        description, due_date, priority = args.add
-        add_task(description, due_date, priority)
+        if len(args.add) < 3:
+            print("Please provide a task description, due date and priority")
+            return
+        description = args.add[0]
+        due_date = args.add[1]
+        priority = args.add[2]
+        tags = ' '.join(args.add[3:] if len(args.add) < 3 else "")
+        
+        add_task(description, due_date, priority, tags)
     elif args.view:
         view_tasks()
     elif args.complete is not None:
         mark_tasks_complete(args.complete - 1)
     elif args.delete is not None:
         delete_task(args.delete - 1)
+
+if __name__ == "__main__":
+    main()
