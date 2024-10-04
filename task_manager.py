@@ -23,13 +23,16 @@ class Task:
 def add_task(description, due_date, priority, tags=""):
     """A function to add tasks to a csv file"""
     try:
-        task = Task(description, due_date, priority)
+        task = Task(description, due_date, priority, tags)
     except ValueError as e:
         print(e)
         return
     
+    file_exists = os.path.exists('tasks.csv')
     with open('tasks.csv', 'a', newline='') as f:
         writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(['Description', 'Due Date', 'Priority', 'Tags', 'Completed'])
         writer.writerow([description, due_date, priority, tags, task.completed])
     print(f"Task: {description} added successfully under {tags}")
 
@@ -52,7 +55,8 @@ def view_tasks():
             except ValueError:
                 print('No tasks added yet')
                 return
-            task = Task(description, due_date, priority, tags, completed == 'True')
+            parsed_date = datetime.strptime(due_date, '%Y-%m-%d')
+            task = Task(description, parsed_date, priority, tags, completed == 'True')
             tasks.append(task)
     
     if not tasks:
@@ -128,13 +132,14 @@ def main():
     args = parse_arguments()
 
     if args.add:
+        print(args.add)
         if len(args.add) < 3:
             print("Please provide a task description, due date and priority")
             return
         description = args.add[0]
         due_date = args.add[1]
         priority = args.add[2]
-        tags = ' '.join(args.add[3:] if len(args.add) < 3 else "")
+        tags = ''.join(args.add[3] if len(args.add) > 3 else "")
         
         add_task(description, due_date, priority, tags)
     elif args.view:

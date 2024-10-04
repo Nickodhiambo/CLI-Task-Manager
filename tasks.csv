@@ -1,8 +1,3 @@
-Buy Grocery,2024-10-03,High,True
-Take a nap,2024-10-03,High,False
 Description,Due Date,Priority,Tags,Completed
-Finish report,2024-10-02,Medium,False
-Description,Due Date,Priority,Tags,Completed
-Buy Groceries,2024-10-01,High,False
-Buy Groceries,2024-10-01,High,,False
-Buy Groceries,2024-10-01,High,,False
+Buy Groceries,2024-10-01,High,"Shopping,Personal",False
+Buy Groceries,2024-10-01,High,"Shopping,Personal",False
