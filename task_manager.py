@@ -47,16 +47,15 @@ def view_tasks():
 
 
     with open ('tasks.csv', 'r') as f:
-        reader = csv.reader(f)
+        reader = list(csv.reader(f))
 
-        for row in reader:
+        for row in reader[1:]:
             try:
                 description, due_date, priority, tags, completed = row
             except ValueError:
                 print('No tasks added yet')
                 return
-            parsed_date = datetime.strptime(due_date, '%Y-%m-%d')
-            task = Task(description, parsed_date, priority, tags, completed == 'True')
+            task = Task(description, due_date, priority, tags, completed == 'True')
             tasks.append(task)
     
     if not tasks:
@@ -82,8 +81,8 @@ def mark_tasks_complete(task_index):
         reader = csv.reader(f)
         tasks = list(reader)
 
-    if 0 <= task_index < len(tasks):
-        tasks[task_index][3] = "True"
+    if 1 <= task_index < len(tasks):
+        tasks[task_index][4] = "True"
 
         with open('tasks.csv', 'w', newline='') as f:
             writer = csv.writer(f)
@@ -105,13 +104,13 @@ def delete_task(task_index):
         reader = csv.reader(f)
         tasks = list(reader)
 
-    if 0 <= task_index < len(tasks):
+    if 1 <= task_index < len(tasks):
         deleted_task = tasks.pop(task_index)
 
         with open('tasks.csv', 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerows(tasks)
-        print(f'Deleted {deleted_task[0]}')
+        print(f'Deleted {deleted_task[0]} due on {deleted_task[1]}')
     else:
         print(f"Invalid task number. Please select a task number between 1 and {len(tasks)}")
 
