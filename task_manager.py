@@ -73,6 +73,9 @@ def view_tasks(reminder=False):
         for task in tasks:
             if task.due_date <= today + timedelta(days=2) and not task.completed:
                 print(f'Reminder: {task}')
+            else:
+                print("No tasks due within the next two days")
+                break
 
     else:
         for idx, task in enumerate(tasks, start=1):
