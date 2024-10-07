@@ -35,10 +35,10 @@ To use this tool, follow these steps:
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/Nickodhiambo/Text-Based-Data-Cleaning-Assistant.git
+   git clone https://github.com/Nickodhiambo/CLI-Task-Manager.git
    ```
 
-2. Create a Python virtual environment
+2. Create and activate a Python virtual environment
     ```bash
     python -m venv venv
     <!-- For windows -->
@@ -56,7 +56,7 @@ To use this tool, follow these steps:
 
 4. Change into project directory
    ```bash
-   cd CLI_Data_Cleaning_Tool
+   cd CLI-Task-Manager
    ```
 
 ## Usage
