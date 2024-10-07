@@ -107,7 +107,7 @@ def mark_tasks_complete(task_index):
 def delete_task(task_index):
     """Deletes a task by index"""
     if not os.path.exists('tasks.csv'):
-        print(Fore.RED + "Tasks not found")
+        print(Fore.RED + "No task found. Add a task first")
         return
     
     tasks = []
